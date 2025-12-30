@@ -24,21 +24,21 @@
     ]
   },
   "esmodules": [
-    "scripts/main.js"
+    "https://raw.githubusercontent.com/ronansky/foundryvtt-persona5-shopkeeper/main/scripts/main.js"
   ],
   "styles": [
-    "styles/persona5-shop.css"
+    "https://raw.githubusercontent.com/ronansky/foundryvtt-persona5-shopkeeper/main/styles/persona5-shop.css"
   ],
   "languages": [
     {
       "lang": "en",
       "name": "English",
-      "path": "lang/en.json"
+      "path": "https://raw.githubusercontent.com/ronansky/foundryvtt-persona5-shopkeeper/main/lang/en.json"
     }
   ],
   "url": "https://github.com/ronansky/foundryvtt-persona5-shopkeeper",
   "manifest": "https://raw.githubusercontent.com/ronansky/foundryvtt-persona5-shopkeeper/main/module.json",
   "download": "https://github.com/ronansky/foundryvtt-persona5-shopkeeper/archive/refs/heads/main.zip",
-  "license": "LICENSE",
-  "readme": "README.md"
+  "license": "https://raw.githubusercontent.com/ronansky/foundryvtt-persona5-shopkeeper/main/LICENSE",
+  "readme": "https://raw.githubusercontent.com/ronansky/foundryvtt-persona5-shopkeeper/main/README.md"
 }
