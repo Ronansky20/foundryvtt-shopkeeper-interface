@@ -24,16 +24,16 @@ jobs:
         run: |
           sed -i 's/"version": ".*"/"version": "${{ steps.get_version.outputs.VERSION }}"/' module.json
 
+      - name: Create module directory structure
+        run: |
+          mkdir -p persona5-shopkeeper
+          cp -r scripts styles templates lang module.json README.md LICENSE persona5-shopkeeper/
+
       - name: Create ZIP archive
         run: |
-          zip -r persona5-shopkeeper.zip \
-            scripts/ \
-            styles/ \
-            templates/ \
-            lang/ \
-            module.json \
-            README.md \
-            LICENSE
+          cd persona5-shopkeeper
+          zip -r ../persona5-shopkeeper.zip ./*
+          cd ..
 
       - name: Create Release
         id: create_release
