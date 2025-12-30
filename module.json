@@ -10,7 +10,7 @@
   },
   "authors": [
     {
-      "name": "Your Name",
+      "name": "ronansky",
       "flags": {}
     }
   ],
@@ -36,9 +36,9 @@
       "path": "lang/en.json"
     }
   ],
-  "url": "https://github.com/yourusername/persona5-shopkeeper",
-  "manifest": "",
-  "download": "",
+  "url": "https://github.com/ronansky/foundryvtt-persona5-shopkeeper",
+  "manifest": "https://raw.githubusercontent.com/ronansky/foundryvtt-persona5-shopkeeper/main/module.json",
+  "download": "https://github.com/ronansky/foundryvtt-persona5-shopkeeper/archive/refs/heads/main.zip",
   "license": "LICENSE",
   "readme": "README.md"
 }
