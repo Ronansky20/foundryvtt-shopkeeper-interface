@@ -1,0 +1,20 @@
+{
+  "PERSONA5SHOP.Title": "Takemi Medical Clinic",
+  "PERSONA5SHOP.Vendor": "Vendor",
+  "PERSONA5SHOP.Buyer": "Customer",
+  "PERSONA5SHOP.Shop": "Shop",
+  "PERSONA5SHOP.OpenShop": "Open Persona 5 Shop",
+  "PERSONA5SHOP.SelectBuyer": "Please select a buyer (select a token or assign a character)",
+  "PERSONA5SHOP.Cart": "Shopping Cart",
+  "PERSONA5SHOP.Total": "Total",
+  "PERSONA5SHOP.AddToCart": "Add to Cart",
+  "PERSONA5SHOP.Purchase": "Purchase",
+  "PERSONA5SHOP.Exit": "Exit",
+  "PERSONA5SHOP.Hint": "Use ↑↓ to navigate, Enter to add to cart, Esc to exit",
+  "PERSONA5SHOP.NoItems": "No items available",
+  "PERSONA5SHOP.EmptyCart": "Cart is empty",
+  "PERSONA5SHOP.InsufficientFunds": "Insufficient funds!",
+  "PERSONA5SHOP.PurchaseComplete": "Purchase complete!",
+  "PERSONA5SHOP.SettingEnableUI": "Enable Persona 5 Shop UI",
+  "PERSONA5SHOP.SettingEnableUIHint": "When enabled, adds a shop button to NPC actor sheets"
+}

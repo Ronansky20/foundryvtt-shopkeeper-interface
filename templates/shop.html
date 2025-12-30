@@ -1,0 +1,80 @@
+<div class="shop-container">
+  <!-- Header Section -->
+  <div class="shop-header">
+    <div class="shop-vendor-name">
+      {{ vendor }}
+    </div>
+    <div class="shop-buyer-info">
+      <span class="buyer-name">{{ buyer }}</span>
+      <div class="buyer-currency">{{ currency }}</div>
+    </div>
+  </div>
+
+  <!-- Item List Section -->
+  <div class="shop-items">
+    {{#if inventory.length}}
+      {{#each inventory}}
+        <div class="shop-item {{#if (eq @index ../selectedIndex)}}selected{{/if}}" data-item-id="{{this.id}}">
+          <img src="{{this.img}}" alt="{{this.name}}" class="shop-item-icon" />
+          <div class="shop-item-details">
+            <div class="shop-item-name">{{this.name}}</div>
+            <div class="shop-item-description">{{this.description}}</div>
+          </div>
+          <div class="shop-item-price">{{this.price}}</div>
+        </div>
+      {{/each}}
+    {{else}}
+      <div class="shop-empty">
+        {{localize "PERSONA5SHOP.NoItems"}}
+      </div>
+    {{/if}}
+  </div>
+
+  <!-- Sidebar Section -->
+  <div class="shop-sidebar">
+    <div class="shop-character-silhouette">
+      <div class="silhouette-figure"></div>
+    </div>
+    
+    <div class="shop-cart-section">
+      <div class="cart-title">{{localize "PERSONA5SHOP.Cart"}}</div>
+      
+      <div class="cart-items">
+        {{#if cart.length}}
+          {{#each cart}}
+            <div class="cart-item">
+              <span class="cart-item-name">{{this.name}} x{{this.quantity}}</span>
+              <span>€{{multiply this.price this.quantity}}</span>
+              <button class="cart-item-remove" data-item-id="{{this.id}}">✕</button>
+            </div>
+          {{/each}}
+        {{else}}
+          <div class="cart-empty">{{localize "PERSONA5SHOP.EmptyCart"}}</div>
+        {{/if}}
+      </div>
+
+      <div class="cart-total">
+        <span class="cart-total-label">{{localize "PERSONA5SHOP.Total"}}</span>
+        <span class="cart-total-amount">€{{cartTotal}}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer Section -->
+  <div class="shop-footer">
+    <div class="shop-action-hint">
+      {{localize "PERSONA5SHOP.Hint"}}
+    </div>
+    <div class="shop-actions">
+      <button class="shop-button btn-add-to-cart">
+        {{localize "PERSONA5SHOP.AddToCart"}}
+      </button>
+      <button class="shop-button btn-purchase" {{#unless canAfford}}disabled{{/unless}}>
+        {{localize "PERSONA5SHOP.Purchase"}}
+      </button>
+      <button class="shop-button btn-exit">
+        {{localize "PERSONA5SHOP.Exit"}}
+      </button>
+    </div>
+  </div>
+</div>
