@@ -38,7 +38,6 @@
   ],
   "url": "https://github.com/Ronansky20/foundryvtt-shopkeeper-interface",
   "manifest": "https://raw.githubusercontent.com/Ronansky20/foundryvtt-shopkeeper-interface/main/module.json",
-  "download": "https://github.com/Ronansky20/foundryvtt-shopkeeper-interface/archive/refs/heads/main.zip",
   "license": "https://raw.githubusercontent.com/Ronansky20/foundryvtt-shopkeeper-interface/main/LICENSE",
   "readme": "https://raw.githubusercontent.com/Ronansky20/foundryvtt-shopkeeper-interface/main/README.md"
 }
