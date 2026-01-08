@@ -115,8 +115,19 @@
   height: 50px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #e60012;
+  border: 3px solid var(--p5-red);
   margin-right: 10px;
+  box-shadow: 0 0 15px rgba(228, 28, 28, 0.5);
+}
+
+.vendor-avatar {
+  width: 60px;
+  height: 60px;
+}
+
+.buyer-avatar {
+  width: 50px;
+  height: 50px;
 }
 
 /* Item list section */
@@ -261,7 +272,7 @@
 .shop-character-silhouette {
   flex: 1;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: center;
   padding: 20px;
   position: relative;
@@ -269,12 +280,15 @@
 }
 
 .silhouette-figure {
-  width: 100%;
-  height: 100%;
-  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 400"><ellipse cx="100" cy="50" rx="40" ry="50" fill="white" opacity="0.3"/><rect x="60" y="100" width="80" height="150" fill="white" opacity="0.3"/><rect x="40" y="110" width="30" height="100" fill="white" opacity="0.3"/><rect x="130" y="110" width="30" height="100" fill="white" opacity="0.3"/><rect x="70" y="250" width="25" height="100" fill="white" opacity="0.3"/><rect x="105" y="250" width="25" height="100" fill="white" opacity="0.3"/></svg>') no-repeat center bottom;
-  background-size: contain;
-  filter: blur(1px);
-  opacity: 0.4;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  filter: brightness(0.3) contrast(1.5);
+  opacity: 0.6;
+  border: 3px solid var(--p5-cyan);
+  box-shadow: 0 0 30px rgba(0, 168, 232, 0.3);
 }
 
 .shop-cart-section {
@@ -519,15 +533,4 @@
   color: var(--p5-light-gray);
   font-size: 12px;
   font-style: italic;
-}
-
-/* If you want larger avatars */
-.vendor-avatar {
-  width: 60px;
-  height: 60px;
-}
-
-.buyer-avatar {
-  width: 40px;
-  height: 40px;
 }
