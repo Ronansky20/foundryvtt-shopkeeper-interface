@@ -1,12 +1,16 @@
 <div class="shop-container">
   <!-- Header Section -->
   <div class="shop-header">
-    <div class="shop-vendor-name">
-      {{ vendor }}
+    <div class="shop-vendor-info">
+      <img src="{{vendorImg}}" alt="{{vendor}}" class="vendor-avatar" />
+      <div class="shop-vendor-name">
+        {{ vendor }}
+      </div>
     </div>
     <div class="shop-buyer-info">
+      <img src="{{buyerImg}}" alt="{{buyer}}" class="buyer-avatar" />
       <span class="buyer-name">{{ buyer }}</span>
-      <div class="buyer-currency">{{ currency }}</div>
+      <div class="buyer-currency">€{{ currency }}</div>
     </div>
   </div>
 
@@ -20,7 +24,7 @@
             <div class="shop-item-name">{{this.name}}</div>
             <div class="shop-item-description">{{this.description}}</div>
           </div>
-          <div class="shop-item-price">{{this.price}}</div>
+          <div class="shop-item-price">€{{this.price}}</div>
         </div>
       {{/each}}
     {{else}}

@@ -52,7 +52,9 @@ class Persona5ShopApp extends Application {
     
     return {
       vendor: this.vendor?.name || game.i18n.localize("PERSONA5SHOP.Vendor"),
+      vendorImg: this.vendor?.img || "icons/svg/mystery-man.svg",
       buyer: this.buyer?.name || game.i18n.localize("PERSONA5SHOP.Buyer"),
+      buyerImg: this.buyer?.img || "icons/svg/mystery-man.svg",
       currency: buyerCurrency,
       inventory: this.inventory,
       cart: this.cart,
