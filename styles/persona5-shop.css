@@ -72,10 +72,15 @@
   text-shadow: 2px 2px 4px var(--p5-black);
 }
 
+.shop-vendor-info {
+  display: flex;
+  align-items: center;
+}
+
 .shop-buyer-info {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 10px;
   font-size: 18px;
   font-weight: 700;
 }
@@ -101,6 +106,17 @@
   content: "€";
   color: var(--p5-cyan);
   font-size: 20px;
+}
+
+/* Avatar styling */
+.vendor-avatar,
+.buyer-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e60012;
+  margin-right: 10px;
 }
 
 /* Item list section */
@@ -503,4 +519,15 @@
   color: var(--p5-light-gray);
   font-size: 12px;
   font-style: italic;
+}
+
+/* If you want larger avatars */
+.vendor-avatar {
+  width: 60px;
+  height: 60px;
+}
+
+.buyer-avatar {
+  width: 40px;
+  height: 40px;
 }
