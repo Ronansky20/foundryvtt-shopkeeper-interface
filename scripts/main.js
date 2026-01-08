@@ -237,7 +237,7 @@ Hooks.once('ready', () => {
     
     // Add "Open Shop" button to actor sheets
     const actor = app.actor;
-    if (actor.type === "npc" || actor.type === "mook") {
+    if (actor.type === "container") {
       const header = html.find('.window-header');
       const shopButton = $(`<a class="persona5-shop-button" title="${game.i18n.localize('PERSONA5SHOP.OpenShop')}">
         <i class="fas fa-shopping-cart"></i> ${game.i18n.localize('PERSONA5SHOP.Shop')}
