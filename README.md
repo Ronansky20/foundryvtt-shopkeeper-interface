@@ -1,4 +1,6 @@
-# Persona 5 Royal Shopkeeper Interface
+# Persona 5 Royal inspired Shopkeeper Interface
+
+# THIS IS A TESTING MODULE MADE FOR PERSONAL USE, ANY USE OUTSIDE OF MY USE MAY HAVE YOU GET ISSUES.
 
 A FoundryVTT module that transforms the Cyberpunk RED vendor interface into a stylized Persona 5 Royal shop experience.
 
