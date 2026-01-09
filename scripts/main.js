@@ -72,13 +72,16 @@ class Persona5ShopApp extends Application {
   activateListeners(html) {
     super.activateListeners(html);
     
-    // Item selection
-    html.find('.shop-item-row').click(this._onSelectItem.bind(this));
+    // Debug: Check if buttons exist
+    console.log("Buttons found:", html.find('.p5-button').length);
     
-    // Purchase actions - match the actual button classes
-    html.find('.btn-add').click(this._onAddToCart.bind(this));
-    html.find('.btn-buy').click(this._onPurchase.bind(this));
-    html.find('.btn-exit').click(this._onExit.bind(this));
+    // Item selection
+    html.on('click', '.shop-item-row', this._onSelectItem.bind(this));
+    
+    // Purchase actions - use event delegation
+    html.on('click', '.btn-add', this._onAddToCart.bind(this));
+    html.on('click', '.btn-buy', this._onPurchase.bind(this));
+    html.on('click', '.btn-exit', this._onExit.bind(this));
     
     // Keyboard navigation
     this._setupKeyboardNavigation(html);
@@ -225,7 +228,7 @@ class Persona5ShopApp extends Application {
     
     $('#persona5-shop-wrapper').html(content);
     
-    // Activate listeners on the new element
+    // Activate listeners on the new element AFTER inserting HTML
     this.activateListeners($('#persona5-shop-wrapper'));
     
     return html;
