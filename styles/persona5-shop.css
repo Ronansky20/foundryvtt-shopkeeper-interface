@@ -291,11 +291,27 @@ body {
   font-size: 14px;
   font-weight: 900;
   text-transform: uppercase;
-  border: 3px solid;
+  border: 3px solid #000;
   cursor: pointer;
   background: #fff;
   color: #000;
   border-radius: 0;
+  transition: all 0.2s ease;
+}
+
+.p5-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.p5-button:active {
+  transform: translateY(0);
+}
+
+.btn-add {
+  background: #fff;
+  color: #000;
+  border-color: #000;
 }
 
 .btn-buy {
@@ -304,10 +320,23 @@ body {
   border-color: #ff0000;
 }
 
+.btn-buy.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 .btn-exit {
   background: #222;
   color: #fff;
   border-color: #666;
+}
+
+.action-hint {
+  color: #888;
+  font-size: 13px;
+  font-style: italic;
+  flex: 1;
 }
 
 .shop-items-list::-webkit-scrollbar {
