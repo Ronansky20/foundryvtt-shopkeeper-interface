@@ -1,113 +1,18 @@
-/* Reset and base */
-.persona5-shop {
-  font-family: 'Roboto', sans-serif;
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  outline: none !important;
-}
-
-#persona5-shop {
-  border: none !important;
-  box-shadow: none !important;
-  background: transparent !important;
-  display: none !important;
-  visibility: hidden !important;
-}
-
-#persona5-shop.app.window-app {
-  all: unset !important;
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
-  z-index: 10000 !important;
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  padding: 0 !important;
-  margin: 0 !important;
-}
-
-/* More specific targeting */
-.app.window-app.persona5-shop {
-  border: none !important;
-  box-shadow: none !important;
-  background: transparent !important;
-}
-
-.persona5-shop .window-app {
-  border: none !important;
-  box-shadow: none !important;
-  outline: none !important;
-}
-
-/* Target rendered window directly */
-#persona5-shop.app.window-app {
-  border: 0 !important;
-  outline: 0 !important;
-  box-shadow: none !important;
-  background: transparent !important;
-  min-width: 100vw !important;
-  min-height: 100vh !important;
-}
-
-/* Remove header completely */
-#persona5-shop .window-header {
-  display: none !important;
-  height: 0 !important;
-}
-
-.persona5-shop .window-content {
-  padding: 0 !important;
-  background: transparent !important;
-  height: 100vh !important;
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  z-index: 10000 !important;
-  border: none !important;
-  outline: none !important;
-}
-
-/* Stretch content to full screen */
-#persona5-shop .window-content {
-  border: 0 !important;
-  outline: 0 !important;
-  box-shadow: none !important;
-  background: transparent !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  max-height: 100vh !important;
-}
-
-#persona5-shop.app.window-app .window-content {
-  width: 100% !important;
-  height: 100% !important;
-  padding: 0 !important;
-  background: transparent !important;
-  border: none !important;
-}
-
-/* Hide the Foundry window completely */
+/* Hide Foundry window */
 #persona5-shop {
   display: none !important;
-  visibility: hidden !important;
 }
 
-/* Show our custom wrapper instead */
+/* Show custom wrapper */
 #persona5-shop-wrapper {
   display: block !important;
 }
 
 body {
-  overflow: hidden; /* Prevent scrolling when shop is open */
+  overflow: hidden;
 }
 
-/* Main container - fullscreen overlay */
+/* Main container */
 .shop-container.p5-style {
   position: fixed;
   top: 0;
@@ -119,9 +24,12 @@ body {
   grid-template-rows: 1fr auto;
   background: transparent;
   z-index: 10000;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-/* LEFT PANEL - White background with items */
+/* LEFT PANEL */
 .shop-left-panel {
   grid-column: 1;
   grid-row: 1 / -1;
@@ -130,17 +38,12 @@ body {
   flex-direction: column;
   position: relative;
   box-shadow: 5px 0 30px rgba(0, 0, 0, 0.5);
-  transform: skewX(-2deg);
-  transform-origin: top left;
   padding: 40px;
   padding-left: 60px;
+  margin: 0;
+  box-sizing: border-box;
 }
 
-.shop-left-panel > * {
-  transform: skewX(2deg);
-}
-
-/* Vendor header - NO BUBBLE */
 .shop-vendor-header {
   display: flex;
   align-items: center;
@@ -148,14 +51,6 @@ body {
   margin-bottom: 30px;
   padding-bottom: 20px;
   border-bottom: 3px solid #000;
-}
-
-.vendor-icon-container {
-  display: none; /* Remove the bubble */
-}
-
-.vendor-icon {
-  display: none; /* Remove the bubble avatar */
 }
 
 .vendor-name {
@@ -177,7 +72,6 @@ body {
   font-size: 14px;
 }
 
-/* Items list */
 .shop-items-list {
   flex: 1;
   overflow-y: auto;
@@ -208,11 +102,6 @@ body {
   color: #fff;
 }
 
-.shop-item-row.selected .item-name-jp,
-.shop-item-row.selected .item-price-tag {
-  color: #fff;
-}
-
 .item-icon-box {
   width: 70px;
   height: 70px;
@@ -223,10 +112,6 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.shop-item-row.selected .item-icon-box {
-  border-color: #fff;
 }
 
 .item-icon {
@@ -246,15 +131,8 @@ body {
   font-weight: 900;
   color: #000;
   text-align: right;
-  white-space: nowrap;
 }
 
-.currency-symbol {
-  font-size: 20px;
-  margin-left: 3px;
-}
-
-/* Footer */
 .shop-inventory-footer {
   display: flex;
   justify-content: space-between;
@@ -266,12 +144,6 @@ body {
   padding-left: 60px;
 }
 
-.inventory-count {
-  display: flex;
-  align-items: baseline;
-  gap: 15px;
-}
-
 .count-label {
   background: #fff;
   color: #000;
@@ -279,22 +151,12 @@ body {
   border-radius: 25px;
   font-size: 14px;
   font-weight: 700;
-  text-transform: uppercase;
 }
 
 .count-value {
   font-size: 36px;
   font-weight: 900;
-}
-
-.count-unit {
-  font-size: 18px;
-  margin-left: 5px;
-  text-transform: uppercase;
-}
-
-.cart-total-display {
-  text-align: right;
+  margin-left: 15px;
 }
 
 .total-value {
@@ -311,16 +173,18 @@ body {
   font-style: italic;
 }
 
-/* RIGHT PANEL - Blue background with character */
+/* RIGHT PANEL */
 .shop-right-panel {
   grid-column: 2;
   grid-row: 1;
   background: linear-gradient(135deg, #0044dd 0%, #0066ff 50%, #0088ff 100%);
   position: relative;
   overflow: hidden;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-/* Decorative geometric shapes */
 .shop-right-panel::before,
 .shop-right-panel::after {
   content: "";
@@ -368,9 +232,8 @@ body {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  /* Create white silhouette effect */
-  filter: brightness(100) contrast(100);
-  opacity: 0.4;
+  filter: brightness(0) invert(1);
+  opacity: 0.5;
 }
 
 .buyer-info-corner {
@@ -382,7 +245,6 @@ body {
   background: rgba(0, 0, 0, 0.3);
   padding: 15px 25px;
   border-radius: 8px;
-  backdrop-filter: blur(10px);
 }
 
 .buyer-name-display {
@@ -393,7 +255,6 @@ body {
   text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.7);
   margin-bottom: 8px;
   text-transform: uppercase;
-  letter-spacing: 1px;
 }
 
 .buyer-money {
@@ -404,7 +265,7 @@ body {
   text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.7);
 }
 
-/* Action bar */
+/* ACTION BAR */
 .shop-actions-bar {
   grid-column: 1 / -1;
   grid-row: 2;
@@ -414,13 +275,8 @@ body {
   justify-content: space-between;
   align-items: center;
   gap: 30px;
-  border-top: 3px solid #333;
-}
-
-.action-hint {
-  color: #888;
-  font-size: 13px;
-  font-style: italic;
+  margin: 0;
+  box-sizing: border-box;
 }
 
 .action-buttons {
@@ -433,28 +289,11 @@ body {
   font-size: 14px;
   font-weight: 900;
   text-transform: uppercase;
-  letter-spacing: 2px;
   border: 3px solid;
   cursor: pointer;
-  transition: all 0.2s ease;
   background: #fff;
   color: #000;
   border-radius: 0;
-}
-
-.p5-button:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 20px rgba(255, 255, 255, 0.4);
-}
-
-.p5-button:active {
-  transform: translateY(-1px);
-}
-
-.btn-add {
-  background: #fff;
-  color: #000;
-  border-color: #000;
 }
 
 .btn-buy {
@@ -463,33 +302,17 @@ body {
   border-color: #ff0000;
 }
 
-.btn-buy.disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-  pointer-events: none;
-}
-
 .btn-exit {
   background: #222;
   color: #fff;
   border-color: #666;
 }
 
-/* Scrollbar */
 .shop-items-list::-webkit-scrollbar {
   width: 10px;
-}
-
-.shop-items-list::-webkit-scrollbar-track {
-  background: #e0e0e0;
-  border-radius: 5px;
 }
 
 .shop-items-list::-webkit-scrollbar-thumb {
   background: #0066cc;
   border-radius: 5px;
-}
-
-.shop-items-list::-webkit-scrollbar-thumb:hover {
-  background: #0044aa;
 }
