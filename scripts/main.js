@@ -19,13 +19,15 @@ class Persona5ShopApp extends Application {
       id: "persona5-shop",
       template: "modules/persona5-shopkeeper/templates/shop.html",
       classes: ["persona5-shop"],
-      width: 1200,
-      height: 700,
+      width: window.innerWidth,
+      height: window.innerHeight,
       resizable: false,
-      title: this.vendor?.name || game.i18n.localize("PERSONA5SHOP.Shop"),
+      title: "",
       popOut: true,
       minimizable: false,
-      frame: false // Add this line to remove the window frame
+      frame: false,
+      top: 0,
+      left: 0
     });
   }
 
@@ -199,6 +201,19 @@ class Persona5ShopApp extends Application {
   _onExit(event) {
     event.preventDefault();
     this.close();
+  }
+
+  async _renderInner(data) {
+    const html = await super._renderInner(data);
+    
+    // Remove all borders from parent elements
+    this.element.css({
+      'border': 'none',
+      'box-shadow': 'none',
+      'background': 'transparent'
+    });
+    
+    return html;
   }
 
   close(options) {
