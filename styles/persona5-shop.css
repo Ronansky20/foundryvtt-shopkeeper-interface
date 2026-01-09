@@ -11,6 +11,8 @@
   border: none !important;
   box-shadow: none !important;
   background: transparent !important;
+  display: none !important;
+  visibility: hidden !important;
 }
 
 #persona5-shop.app.window-app {
@@ -88,6 +90,21 @@
   padding: 0 !important;
   background: transparent !important;
   border: none !important;
+}
+
+/* Hide the Foundry window completely */
+#persona5-shop {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+/* Show our custom wrapper instead */
+#persona5-shop-wrapper {
+  display: block !important;
+}
+
+body {
+  overflow: hidden; /* Prevent scrolling when shop is open */
 }
 
 /* Main container - fullscreen overlay */

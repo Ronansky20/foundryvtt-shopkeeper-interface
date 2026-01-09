@@ -216,8 +216,31 @@ class Persona5ShopApp extends Application {
     return html;
   }
 
+  async _renderOuter(force) {
+    const html = await super._renderOuter(force);
+    
+    // Hide the actual window element
+    html.hide();
+    
+    // Extract just the content
+    const content = html.find('.window-content').html();
+    
+    // Create a wrapper div and insert it into the body
+    if ($('#persona5-shop-wrapper').length === 0) {
+      $('body').append(`<div id="persona5-shop-wrapper"></div>`);
+    }
+    
+    $('#persona5-shop-wrapper').html(content);
+    
+    // Activate listeners on the new element
+    this.activateListeners($('#persona5-shop-wrapper'));
+    
+    return html;
+  }
+
   close(options) {
     $(document).off('keydown.persona5shop');
+    $('#persona5-shop-wrapper').remove();
     return super.close(options);
   }
 }
