@@ -7,6 +7,25 @@
   outline: none !important;
 }
 
+#persona5-shop {
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+#persona5-shop.app.window-app {
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+/* More specific targeting */
+.app.window-app.persona5-shop {
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
 .persona5-shop .window-app {
   border: none !important;
   box-shadow: none !important;
