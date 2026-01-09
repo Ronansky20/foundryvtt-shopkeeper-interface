@@ -22,7 +22,10 @@ class Persona5ShopApp extends Application {
       width: 1200,
       height: 700,
       resizable: false,
-      title: this.vendor?.name || game.i18n.localize("PERSONA5SHOP.Shop")
+      title: this.vendor?.name || game.i18n.localize("PERSONA5SHOP.Shop"),
+      popOut: true,
+      minimizable: false,
+      frame: false // Add this line to remove the window frame
     });
   }
 
