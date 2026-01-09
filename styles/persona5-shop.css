@@ -30,7 +30,7 @@
   width: 100vw;
   height: 100vh;
   display: grid;
-  grid-template-columns: 45% 55%;
+  grid-template-columns: 50% 50%;
   grid-template-rows: 1fr auto;
   background: transparent;
   z-index: 10000;
@@ -45,58 +45,51 @@
   flex-direction: column;
   position: relative;
   box-shadow: 5px 0 30px rgba(0, 0, 0, 0.5);
-  transform: skewX(-3deg);
+  transform: skewX(-2deg);
   transform-origin: top left;
   padding: 40px;
-  padding-left: 80px;
+  padding-left: 60px;
 }
 
 .shop-left-panel > * {
-  transform: skewX(3deg);
+  transform: skewX(2deg);
 }
 
-/* Vendor header */
+/* Vendor header - NO BUBBLE */
 .shop-vendor-header {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 15px;
   margin-bottom: 30px;
   padding-bottom: 20px;
   border-bottom: 3px solid #000;
 }
 
 .vendor-icon-container {
-  width: 60px;
-  height: 60px;
-  background: #000;
-  border-radius: 50%;
-  padding: 3px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  display: none; /* Remove the bubble */
 }
 
 .vendor-icon {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  object-fit: cover;
+  display: none; /* Remove the bubble avatar */
 }
 
 .vendor-name {
-  font-size: 28px;
+  font-size: 32px;
   font-weight: 900;
   color: #000;
   margin: 0;
-  text-transform: none;
-  letter-spacing: 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .shop-date {
   margin-left: auto;
   background: #0066cc;
   color: #fff;
-  padding: 5px 15px;
+  padding: 8px 20px;
   font-weight: 700;
   border-radius: 4px;
+  font-size: 14px;
 }
 
 /* Items list */
@@ -108,13 +101,13 @@
 
 .shop-item-row {
   display: grid;
-  grid-template-columns: 60px 1fr auto;
-  gap: 15px;
+  grid-template-columns: 70px 1fr auto;
+  gap: 20px;
   align-items: center;
-  padding: 15px 20px;
-  margin-bottom: 8px;
+  padding: 18px 25px;
+  margin-bottom: 10px;
   background: #f5f5f5;
-  border-left: 4px solid transparent;
+  border-left: 5px solid transparent;
   cursor: pointer;
   transition: all 0.15s ease;
 }
@@ -136,15 +129,19 @@
 }
 
 .item-icon-box {
-  width: 60px;
-  height: 60px;
+  width: 70px;
+  height: 70px;
   background: #fff;
   border: 2px solid #ddd;
   border-radius: 4px;
-  padding: 5px;
+  padding: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.shop-item-row.selected .item-icon-box {
+  border-color: #fff;
 }
 
 .item-icon {
@@ -154,13 +151,13 @@
 }
 
 .item-name-jp {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 700;
   color: #000;
 }
 
 .item-price-tag {
-  font-size: 24px;
+  font-size: 28px;
   font-weight: 900;
   color: #000;
   text-align: right;
@@ -168,45 +165,47 @@
 }
 
 .currency-symbol {
-  font-size: 18px;
-  margin-left: 2px;
+  font-size: 20px;
+  margin-left: 3px;
 }
 
 /* Footer */
 .shop-inventory-footer {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
-  padding: 20px;
+  align-items: center;
+  padding: 25px 40px;
   background: #000;
   color: #fff;
-  margin: 0 -40px -40px -80px;
-  padding-left: 80px;
+  margin: 0 -40px -40px -60px;
+  padding-left: 60px;
 }
 
 .inventory-count {
   display: flex;
   align-items: baseline;
-  gap: 10px;
+  gap: 15px;
 }
 
 .count-label {
   background: #fff;
   color: #000;
-  padding: 5px 15px;
-  border-radius: 20px;
+  padding: 8px 20px;
+  border-radius: 25px;
   font-size: 14px;
   font-weight: 700;
+  text-transform: uppercase;
 }
 
 .count-value {
-  font-size: 32px;
+  font-size: 36px;
   font-weight: 900;
 }
 
 .count-unit {
   font-size: 18px;
   margin-left: 5px;
+  text-transform: uppercase;
 }
 
 .cart-total-display {
@@ -214,7 +213,7 @@
 }
 
 .total-value {
-  font-size: 48px;
+  font-size: 52px;
   font-weight: 900;
   display: block;
   line-height: 1;
@@ -223,89 +222,100 @@
 .purchase-hint {
   font-size: 14px;
   color: #0066cc;
-  margin-top: 5px;
+  margin-top: 8px;
+  font-style: italic;
 }
 
 /* RIGHT PANEL - Blue background with character */
 .shop-right-panel {
   grid-column: 2;
   grid-row: 1;
-  background: linear-gradient(135deg, #0033cc 0%, #0066ff 50%, #0099ff 100%);
+  background: linear-gradient(135deg, #0044dd 0%, #0066ff 50%, #0088ff 100%);
   position: relative;
   overflow: hidden;
 }
 
-/* Decorative circles */
+/* Decorative geometric shapes */
 .shop-right-panel::before,
 .shop-right-panel::after {
   content: "";
   position: absolute;
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .shop-right-panel::before {
-  width: 400px;
-  height: 400px;
-  top: -100px;
-  right: -100px;
+  width: 800px;
+  height: 600px;
+  top: -200px;
+  right: -300px;
+  transform: rotate(25deg) skewX(-10deg);
   animation: float 20s ease-in-out infinite;
 }
 
 .shop-right-panel::after {
   width: 600px;
-  height: 600px;
-  bottom: -200px;
-  left: -150px;
+  height: 400px;
+  bottom: -150px;
+  left: -200px;
+  transform: rotate(-15deg) skewX(10deg);
   animation: float 25s ease-in-out infinite reverse;
 }
 
 @keyframes float {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(30px, 30px) scale(1.1); }
+  0%, 100% { transform: translate(0, 0) rotate(25deg) skewX(-10deg); }
+  50% { transform: translate(40px, 40px) rotate(30deg) skewX(-12deg); }
 }
 
 .character-silhouette-container {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%) rotate(-5deg);
-  width: 500px;
-  height: 500px;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 600px;
   z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .character-silhouette {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  filter: brightness(0) invert(1);
-  opacity: 0.4;
+  filter: brightness(0) invert(1) opacity(0.5);
+  mix-blend-mode: overlay;
 }
 
 .buyer-info-corner {
   position: absolute;
   top: 40px;
-  right: 40px;
+  right: 50px;
   text-align: right;
   z-index: 2;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 15px 25px;
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
 }
 
 .buyer-name-display {
   display: block;
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 900;
   color: #fff;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-  margin-bottom: 10px;
+  text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.7);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .buyer-money {
   display: block;
-  font-size: 36px;
+  font-size: 40px;
   font-weight: 900;
   color: #fff;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.7);
 }
 
 /* Action bar */
@@ -313,11 +323,12 @@
   grid-column: 1 / -1;
   grid-row: 2;
   background: #000;
-  padding: 20px 40px;
+  padding: 25px 50px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 20px;
+  gap: 30px;
+  border-top: 3px solid #333;
 }
 
 .action-hint {
@@ -328,25 +339,36 @@
 
 .action-buttons {
   display: flex;
-  gap: 15px;
+  gap: 20px;
 }
 
 .p5-button {
-  padding: 12px 30px;
+  padding: 15px 40px;
   font-size: 14px;
   font-weight: 900;
   text-transform: uppercase;
-  letter-spacing: 1.5px;
-  border: 2px solid;
+  letter-spacing: 2px;
+  border: 3px solid;
   cursor: pointer;
   transition: all 0.2s ease;
   background: #fff;
   color: #000;
+  border-radius: 0;
 }
 
 .p5-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(255, 255, 255, 0.4);
+}
+
+.p5-button:active {
+  transform: translateY(-1px);
+}
+
+.btn-add {
+  background: #fff;
+  color: #000;
+  border-color: #000;
 }
 
 .btn-buy {
@@ -358,24 +380,30 @@
 .btn-buy.disabled {
   opacity: 0.3;
   cursor: not-allowed;
+  pointer-events: none;
 }
 
 .btn-exit {
-  background: #000;
+  background: #222;
   color: #fff;
   border-color: #666;
 }
 
 /* Scrollbar */
 .shop-items-list::-webkit-scrollbar {
-  width: 8px;
+  width: 10px;
 }
 
 .shop-items-list::-webkit-scrollbar-track {
   background: #e0e0e0;
+  border-radius: 5px;
 }
 
 .shop-items-list::-webkit-scrollbar-thumb {
   background: #0066cc;
-  border-radius: 4px;
+  border-radius: 5px;
+}
+
+.shop-items-list::-webkit-scrollbar-thumb:hover {
+  background: #0044aa;
 }
