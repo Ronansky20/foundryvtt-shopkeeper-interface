@@ -73,19 +73,12 @@ class Persona5ShopApp extends Application {
     super.activateListeners(html);
     
     // Item selection
-    html.find('.shop-item').click(this._onSelectItem.bind(this));
-    html.find('.shop-item').hover(
-      function() { $(this).addClass('hovered'); },
-      function() { $(this).removeClass('hovered'); }
-    );
+    html.find('.shop-item-row').click(this._onSelectItem.bind(this));
     
-    // Purchase actions
-    html.find('.btn-add-to-cart').click(this._onAddToCart.bind(this));
-    html.find('.btn-purchase').click(this._onPurchase.bind(this));
+    // Purchase actions - match the actual button classes
+    html.find('.btn-add').click(this._onAddToCart.bind(this));
+    html.find('.btn-buy').click(this._onPurchase.bind(this));
     html.find('.btn-exit').click(this._onExit.bind(this));
-    
-    // Cart management
-    html.find('.cart-item-remove').click(this._onRemoveFromCart.bind(this));
     
     // Keyboard navigation
     this._setupKeyboardNavigation(html);
