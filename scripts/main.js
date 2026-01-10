@@ -276,25 +276,34 @@ Hooks.once('ready', () => {
     
     // Add "Open Shop" button to actor sheets
     const actor = app.actor;
-    if (actor.type === "container") {
-      const header = html.find('.window-header');
-      const shopButton = $(`<a class="persona5-shop-button" title="${game.i18n.localize('PERSONA5SHOP.OpenShop')}">
-        <i class="fas fa-shopping-cart"></i> ${game.i18n.localize('PERSONA5SHOP.Shop')}
-      </a>`);
+    const isVendorType = ["container", "npc", "character"].includes(actor?.type);
+    if (!isVendorType) return;
+
+    const header = app.element.find('.window-header');
+    if (!header.length || header.find('.persona5-shop-button').length) return;
+
+    const shopButton = $(`<a class="persona5-shop-button" title="${game.i18n.localize('PERSONA5SHOP.OpenShop')}">
+      <i class="fas fa-shopping-cart"></i> ${game.i18n.localize('PERSONA5SHOP.Shop')}
+    </a>`);
+    
+    shopButton.click(() => {
+      const controlledToken = canvas?.tokens?.controlled?.[0];
+      const buyer = controlledToken?.actor || game.user.character;
       
-      shopButton.click(() => {
-        const selectedTokens = canvas.tokens.controlled;
-        const buyer = selectedTokens.length > 0 ? selectedTokens[0].actor : game.user.character;
-        
-        if (!buyer) {
-          ui.notifications.warn(game.i18n.localize("PERSONA5SHOP.SelectBuyer"));
-          return;
-        }
-        
-        game.persona5shop.openShop(actor, buyer);
-      });
+      if (!buyer) {
+        ui.notifications.warn(game.i18n.localize("PERSONA5SHOP.SelectBuyer"));
+        return;
+      }
       
-      header.find('.close').before(shopButton);
+      game.persona5shop.openShop(actor, buyer);
+    });
+    
+    // Place the button next to the other header controls
+    const closeButton = header.find('.close');
+    if (closeButton.length) {
+      closeButton.before(shopButton);
+    } else {
+      header.append(shopButton);
     }
   });
 });
