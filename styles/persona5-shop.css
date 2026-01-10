@@ -1,11 +1,11 @@
-/* Hide Foundry window */
+/* Show Foundry window (fallback rendering) */
 #persona5-shop {
-  display: none !important;
+  display: block !important;
 }
 
-/* Show custom wrapper */
+/* Hide custom wrapper when not used */
 #persona5-shop-wrapper {
-  display: block !important;
+  display: none !important;
 }
 
 body {
