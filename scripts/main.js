@@ -276,7 +276,7 @@ Hooks.once('ready', () => {
     
     // Add "Open Shop" button to actor sheets
     const actor = app.actor;
-    const isVendorType = ["container", "npc", "character"].includes(actor?.type);
+    const isVendorType = ["container"].includes(actor?.type);
     if (!isVendorType) return;
 
     const header = app.element.find('.window-header');
