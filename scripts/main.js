@@ -276,10 +276,11 @@ Hooks.once('ready', () => {
     
     // Add "Open Shop" button to actor sheets
     const actor = app.actor;
-    const isVendorType = ["container"].includes(actor?.type);
+    const isVendorType = ["container", "npc", "character"].includes(actor?.type);
     if (!isVendorType) return;
 
-    const header = app.element.find('.window-header');
+    // Use the rendered sheet HTML to find the header reliably across systems
+    const header = html.closest('.app').find('.window-header');
     if (!header.length || header.find('.persona5-shop-button').length) return;
 
     const shopButton = $(`<a class="persona5-shop-button" title="${game.i18n.localize('PERSONA5SHOP.OpenShop')}">
