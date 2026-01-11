@@ -9,14 +9,27 @@
     <div class="shop-items-list-wrapper">
       <div class="p5-list-card">
         <div class="p5-list-card-inner">
-          {{#if inventory.length}}
-            {{#each inventory}}
-              <div class="shop-item-row {{#if (eq @index ../selectedIndex)}}selected{{/if}}" data-item-id="{{this.id}}">
-                <div class="item-icon-box">
-                  <img src="{{this.img}}" alt="{{this.name}}" class="item-icon" />
+          {{#if inventoryGroups.length}}
+            {{#each inventoryGroups}}
+              <div class="item-category-section" data-category="{{this.[0]}}">
+                <h3 class="category-header" data-category="{{this.[0]}}">
+                  <span class="category-toggle">▼</span>
+                  {{this.[0]}}
+                </h3>
+                <div class="category-items">
+                  {{#each this.[1]}}
+                    <div class="shop-item-row {{#if (eq this.originalIndex ../../selectedIndex)}}selected{{/if}}" data-item-id="{{this.id}}" data-original-index="{{this.originalIndex}}">
+                      <div class="item-icon-box">
+                        <img src="{{this.img}}" alt="{{this.name}}" class="item-icon" />
+                      </div>
+                      <div class="item-name-jp">{{this.name}}</div>
+                      <div class="item-price-tag">€{{this.price}}</div>
+                      {{#if this.stock}}
+                        <div class="item-stock">×{{this.stock}}</div>
+                      {{/if}}
+                    </div>
+                  {{/each}}
                 </div>
-                <div class="item-name-jp">{{this.name}}</div>
-                <div class="item-price-tag">€{{this.price}}</div>
               </div>
             {{/each}}
           {{else}}
@@ -31,9 +44,19 @@
         <span class="count-label">Have</span>
         <span class="count-value">{{cart.length}}</span>
       </div>
+      <div class="cart-qty-controls">
+        <button class="p5-button cart-dec" title="Decrease quantity">−</button>
+        <span class="qty-display">×{{selectedCartQty}}</span>
+        <button class="p5-button cart-inc {{#unless canIncrement}}disabled{{/unless}}" title="Increase quantity" {{#unless canIncrement}}disabled{{/unless}}>+</button>
+      </div>
       <div class="cart-total-display">
-        <span class="total-value">€{{cartTotal}}</span>
-        <div class="purchase-hint">What are you buying...?</div>
+        <div class="affordability-indicator">
+          <span class="total-value {{#if showInsufficient}}insufficient{{/if}}">€{{cartTotal}}</span>
+          <span class="remaining-funds {{#if canAfford}}positive{{else}}negative{{/if}}">
+            {{#if canAfford}}−{{else}}({{/if}}€{{#if canAfford}}{{remaining}}{{else}}{{multiply remaining -1}}{{/if}}{{#unless canAfford}}){{/unless}}
+          </span>
+        </div>
+        <div class="purchase-hint">{{#if showInsufficient}}Not enough funds!{{else}}What are you buying...?{{/if}}</div>
       </div>
     </div>
   </div>
@@ -54,10 +77,34 @@
       <span class="buyer-money">€{{ currency }}</span>
     </div>
     
+    <!-- Shopping Cart Panel -->
+    <div class="shopping-cart-panel">
+      <h3 class="cart-header">SHOPPING CART</h3>
+      <div class="cart-items-list">
+        {{#if cart.length}}
+          {{#each cart}}
+            <div class="cart-item" data-item-id="{{this.id}}">
+              <img src="{{this.img}}" alt="{{this.name}}" class="cart-item-icon" />
+              <div class="cart-item-info">
+                <div class="cart-item-name">{{this.name}}</div>
+                <div class="cart-item-details">
+                  <span class="cart-item-qty">×{{this.quantity}}</span>
+                  <span class="cart-item-price">€{{multiply this.price this.quantity}}</span>
+                </div>
+              </div>
+              <button class="cart-item-remove" data-item-id="{{this.id}}" title="Remove">×</button>
+            </div>
+          {{/each}}
+        {{else}}
+          <div class="cart-empty">Cart is empty</div>
+        {{/if}}
+      </div>
+    </div>
+    
     <!-- Action buttons (floating at bottom right) -->
     <div class="shop-action-buttons">
       <button class="p5-button btn-exit" data-action="exit">BACK</button>
-      <button class="p5-button btn-buy {{#unless canAfford}}disabled{{/unless}}" data-action="purchase">CONFIRM</button>
+      <button class="p5-button btn-buy {{#unless canAfford}}disabled{{/unless}}" data-action="purchase" {{#unless canAfford}}disabled{{/unless}}>CONFIRM</button>
     </div>
   </div>
 </div>

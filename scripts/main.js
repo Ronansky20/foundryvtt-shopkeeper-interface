@@ -106,10 +106,38 @@ class Persona5ShopApp extends Application {
         img: item.img,
         price: item.system?.price?.market || item.system?.cost || 0,
         quantity: item.system?.amount || 1,
+        stock: item.system?.quantity || item.system?.amount || 999, // Available stock
         description: item.system?.description || "",
         type: item.type
       }));
     }
+  }
+
+  _groupInventoryByType() {
+    const typeLabels = {
+      weapon: 'Weapons',
+      armor: 'Armor',
+      gear: 'Gear',
+      cyberware: 'Cyberware',
+      drug: 'Drugs & Consumables',
+      vehicle: 'Vehicles',
+      cyberdeck: 'Cyberdecks',
+      clothing: 'Clothing',
+      ammo: 'Ammunition'
+    };
+
+    const grouped = {};
+    this.inventory.forEach((item, index) => {
+      const typeKey = item.type || 'other';
+      const label = typeLabels[typeKey] || typeKey.charAt(0).toUpperCase() + typeKey.slice(1);
+      
+      if (!grouped[label]) {
+        grouped[label] = [];
+      }
+      grouped[label].push({ ...item, originalIndex: index });
+    });
+
+    return Object.entries(grouped).sort((a, b) => a[0].localeCompare(b[0]));
   }
 
   getData() {
@@ -121,17 +149,35 @@ class Persona5ShopApp extends Application {
     // Calculate cart total
     const cartTotal = this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     
+    // Selected item's quantity in cart
+    const selectedItem = this.inventory[this.selectedIndex];
+    const selectedCartQty = selectedItem ? (this.cart.find(i => i.id === selectedItem.id)?.quantity || 0) : 0;
+    
+    // Check stock availability for selected item
+    const selectedStock = selectedItem?.stock || 0;
+    const canIncrement = selectedItem && selectedCartQty < selectedStock;
+    
+    // Affordability check
+    const canAfford = buyerCurrency >= cartTotal;
+    const remaining = buyerCurrency - cartTotal;
+    
     return {
       vendor: this.vendor?.name || game.i18n.localize("PERSONA5SHOP.Vendor"),
       vendorImg: this.vendor?.img || "icons/svg/mystery-man.svg",
       buyer: this.buyer?.name || game.i18n.localize("PERSONA5SHOP.Buyer"),
       buyerImg: this.buyer?.img || "icons/svg/mystery-man.svg",
       currency: buyerCurrency,
+      inventoryGroups: this._groupInventoryByType(),
       inventory: this.inventory,
       cart: this.cart,
       cartTotal: cartTotal,
       selectedIndex: this.selectedIndex,
-      canAfford: buyerCurrency >= cartTotal
+      selectedCartQty,
+      selectedStock,
+      canIncrement,
+      canAfford,
+      remaining: remaining,
+      showInsufficient: cartTotal > 0 && !canAfford
     };
   }
 
@@ -204,6 +250,39 @@ class Persona5ShopApp extends Application {
     html.on('click', '.btn-add', this._onAddToCart.bind(this));
     html.on('click', '.btn-buy', this._onPurchase.bind(this));
     html.on('click', '.btn-exit', this._onExit.bind(this));
+
+    // Quantity controls
+    html.on('click', '.cart-inc', this._onIncQuantity.bind(this));
+    html.on('click', '.cart-dec', this._onDecQuantity.bind(this));
+    
+    // Category collapse/expand
+    html.on('click', '.category-header', this._onToggleCategory.bind(this));
+    
+    // Cart item removal
+    html.on('click', '.cart-item-remove', this._onRemoveCartItem.bind(this));
+    
+    // Show cart on CONFIRM button hover
+    html.on('mouseenter', '.btn-buy', function() {
+      html.find('.shopping-cart-panel').addClass('visible');
+    });
+    
+    html.on('mouseleave', '.btn-buy', function() {
+      // Keep visible if hovering over cart itself
+      setTimeout(() => {
+        if (!html.find('.shopping-cart-panel:hover').length) {
+          html.find('.shopping-cart-panel').removeClass('visible');
+        }
+      }, 100);
+    });
+    
+    // Keep cart visible while hovering over it
+    html.on('mouseenter', '.shopping-cart-panel', function() {
+      $(this).addClass('visible');
+    });
+    
+    html.on('mouseleave', '.shopping-cart-panel', function() {
+      $(this).removeClass('visible');
+    });
     
     // Keyboard navigation
     this._setupKeyboardNavigation(html);
@@ -239,11 +318,25 @@ class Persona5ShopApp extends Application {
     this.render();
   }
 
-  _onSelectItem(event) {
-    event.preventDefault();
-    const itemId = $(event.currentTarget).data('item-id');
-    this.selectedIndex = this.inventory.findIndex(i => i.id === itemId);
-    this.render();
+  async _onSelectItem(event) {
+    if (event) event.preventDefault();
+    const row = $(event.currentTarget);
+    
+    // Try to get original index first (for categorized display)
+    let itemIndex = row.data('original-index');
+    
+    // Fallback to finding by item-id
+    if (itemIndex === undefined || itemIndex === null) {
+      const itemId = row.data('item-id');
+      if (itemId) {
+        itemIndex = this.inventory.findIndex(i => i.id === itemId);
+      }
+    }
+    
+    if (itemIndex !== undefined && itemIndex >= 0) {
+      this.selectedIndex = itemIndex;
+      await this.render();
+    }
   }
 
   async _onAddToCart(event) {
@@ -269,6 +362,15 @@ class Persona5ShopApp extends Application {
     
     // Check if item already in cart
     const cartItem = this.cart.find(i => i.id === selectedItem.id);
+    const currentQty = cartItem?.quantity || 0;
+    const stock = selectedItem.stock || 999;
+    
+    // Check stock limit
+    if (currentQty >= stock) {
+      ui.notifications.warn(`Only ${stock} available in stock.`);
+      return;
+    }
+    
     if (cartItem) {
       cartItem.quantity += 1;
       console.log('Incremented quantity:', cartItem.quantity);
@@ -291,6 +393,60 @@ class Persona5ShopApp extends Application {
     const itemId = $(event.currentTarget).data('item-id');
     this.cart = this.cart.filter(i => i.id !== itemId);
     this.render();
+  }
+
+  async _onRemoveCartItem(event) {
+    event.preventDefault();
+    const itemId = $(event.currentTarget).data('item-id');
+    this.cart = this.cart.filter(i => i.id !== itemId);
+    await this.render();
+  }
+
+  _onToggleCategory(event) {
+    event.preventDefault();
+    const header = $(event.currentTarget);
+    const section = header.closest('.item-category-section');
+    const items = section.find('.category-items');
+    const toggle = header.find('.category-toggle');
+    
+    items.slideToggle(200);
+    toggle.toggleClass('collapsed');
+  }
+
+  async _onIncQuantity(event) {
+    if (event) event.preventDefault();
+    const selectedItem = this.inventory[this.selectedIndex];
+    if (!selectedItem) return;
+    
+    const cartItem = this.cart.find(i => i.id === selectedItem.id);
+    const currentQty = cartItem?.quantity || 0;
+    const stock = selectedItem.stock || 999;
+    
+    // Check stock limit
+    if (currentQty >= stock) {
+      ui.notifications.warn(`Only ${stock} available in stock.`);
+      return;
+    }
+    
+    if (cartItem) {
+      cartItem.quantity += 1;
+    } else {
+      this.cart.push({...selectedItem, quantity: 1});
+    }
+    await this.render();
+  }
+
+  async _onDecQuantity(event) {
+    if (event) event.preventDefault();
+    const selectedItem = this.inventory[this.selectedIndex];
+    if (!selectedItem) return;
+    const cartItem = this.cart.find(i => i.id === selectedItem.id);
+    if (!cartItem) return;
+    cartItem.quantity = Math.max(0, cartItem.quantity - 1);
+    if (cartItem.quantity === 0) {
+      this.cart = this.cart.filter(i => i.id !== selectedItem.id);
+    }
+    await this.render();
   }
 
   async _onPurchase(event) {
@@ -587,6 +743,11 @@ Hooks.on("chatMessage", (chatLog, message, chatData) => {
     game.persona5shop.openShop(vendor, buyer);
     return false;
   }
+});
+
+// Register Handlebars helper for multiplication
+Handlebars.registerHelper('multiply', function(a, b) {
+  return Number(a) * Number(b);
 });
 
 export { Persona5ShopApp };
