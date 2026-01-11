@@ -7,11 +7,77 @@ class Persona5ShopApp extends Application {
   constructor(vendor, buyer, options = {}) {
     super(options);
     this.vendor = vendor;
-    this.buyer = buyer;
+    
+    // Auto-detect proper buyer if not provided or if vendor was passed as buyer
+    this.buyer = this._detectBuyer(buyer, vendor);
+    
+    console.log('Shop initialized - Vendor:', this.vendor?.name, 'Buyer:', this.buyer?.name);
+    
     this.cart = [];
     this.selectedIndex = 0;
     this.inventory = [];
     this.loadInventory();
+  }
+
+  _detectBuyer(buyer, vendor) {
+    // If buyer is the same as vendor, it's wrong - need to find the player's character
+    if (buyer?.id === vendor?.id) {
+      console.warn('Buyer same as vendor, auto-detecting player character');
+      buyer = null;
+    }
+    
+    // Validate buyer is a character type with proper ownership
+    if (buyer) {
+      const hasOwnership = buyer.ownership?.[game.user.id] === CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER || buyer.ownership?.default === CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER;
+      if (buyer.type === 'character' && hasOwnership) {
+        console.log('Using provided buyer:', buyer.name, 'Type:', buyer.type);
+        return buyer;
+      }
+      console.warn('Provided buyer invalid (not character or not owned), searching for valid character');
+      buyer = null;
+    }
+    
+    // If no valid buyer provided, try to find player's owned character
+    if (!buyer) {
+      // Try controlled token first - must be character type with OWNER permission
+      const controlledToken = canvas?.tokens?.controlled?.[0];
+      if (controlledToken?.actor) {
+        const actor = controlledToken.actor;
+        const hasOwnership = actor.ownership?.[game.user.id] === CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER || actor.ownership?.default === CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER;
+        if (actor.type === 'character' && hasOwnership) {
+          console.log('Using controlled token character:', actor.name, 'Ownership:', hasOwnership);
+          return actor;
+        }
+      }
+      
+      // Try assigned character
+      if (game.user.character?.type === 'character') {
+        const hasOwnership = game.user.character.ownership?.[game.user.id] === CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER;
+        if (hasOwnership) {
+          console.log('Using assigned character:', game.user.character.name);
+          return game.user.character;
+        }
+      }
+      
+      // Search for any character-type actor where current user has OWNER permission
+      const ownedCharacter = game.actors.find(a => {
+        const hasOwnership = a.ownership?.[game.user.id] === CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER;
+        const isCharacter = a.type === 'character';
+        const notVendor = a.id !== vendor?.id;
+        return isCharacter && hasOwnership && notVendor;
+      });
+      
+      if (ownedCharacter) {
+        console.log('Using owned character:', ownedCharacter.name, 'Type:', ownedCharacter.type);
+        return ownedCharacter;
+      }
+      
+      console.error('Could not find valid buyer character with OWNER permission');
+      ui.notifications.error('No character found with OWNER permission. Please ensure you own a character actor.');
+      return null;
+    }
+    
+    return buyer;
   }
 
   static get defaultOptions() {
@@ -49,8 +115,8 @@ class Persona5ShopApp extends Application {
   getData() {
     const data = super.getData();
     
-    // Get buyer's currency (eurobucks for Cyberpunk RED)
-    const buyerCurrency = this.buyer?.system?.wealth?.euro || 0;
+    // Get buyer's currency with robust detection
+    const buyerCurrency = this._getBuyerCurrency();
     
     // Calculate cart total
     const cartTotal = this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -69,14 +135,70 @@ class Persona5ShopApp extends Application {
     };
   }
 
+  _getBuyerCurrency() {
+    if (!this.buyer) {
+      console.warn('No buyer actor set');
+      return 0;
+    }
+
+    console.log('Buyer actor:', this.buyer.name);
+    console.log('Buyer system data:', this.buyer.system);
+
+    // Try multiple common currency paths across different systems
+    const currencyPaths = [
+      // Cyberpunk RED (primary)
+      () => this.buyer.system?.wealth?.value,
+      // Cyberpunk RED
+      () => this.buyer.system?.wealth?.euro,
+      () => this.buyer.system?.wealth?.eurobucks,
+      // D&D 5e and similar
+      () => this.buyer.system?.currency?.gp,
+      () => this.buyer.system?.attributes?.currency?.gp,
+      // Generic currency field
+      () => this.buyer.system?.currency,
+      () => this.buyer.system?.money,
+      () => this.buyer.system?.wealth,
+    ];
+
+    for (const pathFn of currencyPaths) {
+      try {
+        const value = pathFn();
+        if (value !== undefined && value !== null) {
+          console.log('Found currency:', value, 'via path');
+          return Number(value) || 0;
+        }
+      } catch (e) {
+        // Path doesn't exist, continue
+      }
+    }
+
+    console.error('Could not find currency in buyer actor. Available system keys:', Object.keys(this.buyer.system || {}));
+    return 0;
+  }
+
   activateListeners(html) {
     super.activateListeners(html);
+    
+    // Update date from Simple Calendar if available
+    this._updateDateDisplay(html);
     
     // Debug: Check if buttons exist
     console.log("Buttons found:", html.find('.p5-button').length);
     
-    // Item selection
-    html.on('click', '.shop-item-row', this._onSelectItem.bind(this));
+    // Item selection - delay to allow dblclick to fire
+    let clickTimer = null;
+    html.on('click', '.shop-item-row', (event) => {
+      clearTimeout(clickTimer);
+      clickTimer = setTimeout(() => {
+        this._onSelectItem(event);
+      }, 200);
+    });
+    
+    // Double-click to add to cart
+    html.on('dblclick', '.shop-item-row', (event) => {
+      clearTimeout(clickTimer);
+      this._onAddToCart(event);
+    });
     
     // Purchase actions - use event delegation
     html.on('click', '.btn-add', this._onAddToCart.bind(this));
@@ -127,21 +249,41 @@ class Persona5ShopApp extends Application {
   async _onAddToCart(event) {
     if (event) event.preventDefault();
     
-    const selectedItem = this.inventory[this.selectedIndex];
-    if (!selectedItem) return;
+    // If event targets a specific row, use that item id
+    let selectedIdx = this.selectedIndex;
+    if (event?.currentTarget) {
+      const itemId = $(event.currentTarget).data('item-id');
+      if (itemId) {
+        const idx = this.inventory.findIndex(i => i.id === itemId);
+        if (idx >= 0) selectedIdx = idx;
+      }
+    }
+    
+    const selectedItem = this.inventory[selectedIdx];
+    if (!selectedItem) {
+      console.warn('No item selected to add to cart');
+      return;
+    }
+    
+    console.log('Adding to cart:', selectedItem.name, 'ID:', selectedItem.id);
     
     // Check if item already in cart
     const cartItem = this.cart.find(i => i.id === selectedItem.id);
     if (cartItem) {
       cartItem.quantity += 1;
+      console.log('Incremented quantity:', cartItem.quantity);
     } else {
       this.cart.push({...selectedItem, quantity: 1});
+      console.log('Added new item to cart');
     }
+    
+    console.log('Cart now has', this.cart.length, 'unique items');
     
     // Play sound effect
     AudioHelper.play({src: "sounds/notify.wav", volume: 0.8, autoplay: true}, true);
     
-    this.render();
+    this.selectedIndex = selectedIdx;
+    await this.render();
   }
 
   async _onRemoveFromCart(event) {
@@ -160,17 +302,44 @@ class Persona5ShopApp extends Application {
     }
     
     const cartTotal = this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const buyerCurrency = this.buyer?.system?.wealth?.euro || 0;
+    const buyerCurrency = this._getBuyerCurrency();
+    
+    console.log('Purchase attempt - Cart total:', cartTotal, 'Buyer currency:', buyerCurrency);
     
     if (buyerCurrency < cartTotal) {
       ui.notifications.error(game.i18n.localize("PERSONA5SHOP.InsufficientFunds"));
       return;
     }
     
-    // Deduct currency from buyer
-    await this.buyer.update({
-      "system.wealth.euro": buyerCurrency - cartTotal
-    });
+    // Deduct currency from buyer - try the path we found
+    const newAmount = buyerCurrency - cartTotal;
+    
+    // Try to update via the same paths we check
+    try {
+      if (this.buyer.system?.wealth?.value !== undefined) {
+        await this.buyer.update({"system.wealth.value": newAmount});
+      } else if (this.buyer.system?.wealth?.euro !== undefined) {
+        await this.buyer.update({"system.wealth.euro": newAmount});
+      } else if (this.buyer.system?.wealth?.eurobucks !== undefined) {
+        await this.buyer.update({"system.wealth.eurobucks": newAmount});
+      } else if (this.buyer.system?.currency?.gp !== undefined) {
+        await this.buyer.update({"system.currency.gp": newAmount});
+      } else if (this.buyer.system?.currency !== undefined) {
+        await this.buyer.update({"system.currency": newAmount});
+      } else if (this.buyer.system?.money !== undefined) {
+        await this.buyer.update({"system.money": newAmount});
+      } else if (this.buyer.system?.wealth !== undefined) {
+        await this.buyer.update({"system.wealth": newAmount});
+      } else {
+        console.error('Could not determine currency update path');
+        ui.notifications.error('Unable to deduct currency from actor');
+        return;
+      }
+    } catch (e) {
+      console.error('Error updating buyer currency:', e);
+      ui.notifications.error('Failed to update currency');
+      return;
+    }
     
     // Add items to buyer's inventory
     for (const cartItem of this.cart) {
@@ -197,6 +366,69 @@ class Persona5ShopApp extends Application {
   _onExit(event) {
     event.preventDefault();
     this.close();
+  }
+
+  /**
+   * Update date display using Simple Calendar if available
+   */
+  _updateDateDisplay(html) {
+    const dateElement = html.find('#currentDate');
+    
+    if (!dateElement.length) {
+      console.warn("Date element not found");
+      return;
+    }
+    
+    let dateText = "April 11th";
+    
+    try {
+      // Try both possible module IDs
+      const scModule = game.modules.get('foundryvtt-simple-calendar') || game.modules.get('simple-calendar');
+      console.log("Simple Calendar module found:", !!scModule, "active:", scModule?.active);
+      
+      if (scModule?.active && window.SimpleCalendar) {
+        const SC = window.SimpleCalendar;
+        console.log("SimpleCalendar API available:", !!SC.api);
+        
+        // Try the timestamp display method
+        try {
+          if (SC.api?.timestampToDate) {
+            const currentTimestamp = SC.api.timestamp();
+            const dateObj = SC.api.timestampToDate(currentTimestamp);
+            console.log("Date object:", dateObj);
+            
+            if (dateObj && dateObj.month !== undefined && dateObj.day !== undefined) {
+              const calendar = SC.api.getCurrentCalendar?.() || {};
+              const monthName = calendar.months?.[dateObj.month]?.name || `Month ${dateObj.month + 1}`;
+              dateText = `${monthName} ${dateObj.day + 1}`;
+              console.log("Successfully got date:", dateText);
+            }
+          }
+        } catch (e) {
+          console.warn("Error with timestamp API:", e);
+        }
+        
+        // Fallback: Try formatted date display
+        if (dateText === "April 11th" && SC.api?.formatDateTime) {
+          try {
+            const formatted = SC.api.formatDateTime({});
+            if (formatted) {
+              dateText = formatted;
+              console.log("Got formatted date:", dateText);
+            }
+          } catch (e) {
+            console.warn("Error with formatDateTime:", e);
+          }
+        }
+      } else {
+        console.log("Simple Calendar not available - using fallback date");
+      }
+    } catch (e) {
+      console.error("Error in _updateDateDisplay:", e);
+    }
+    
+    console.log("Setting date to:", dateText);
+    dateElement.text(dateText);
   }
 
   async _renderInner(data) {
@@ -256,28 +488,49 @@ Hooks.once('ready', () => {
   Hooks.on("renderActorSheet", (app, html, data) => {
     if (!game.settings.get("persona5-shopkeeper", "enableCustomUI")) return;
     
-    // Add "Open Shop" button to actor sheets
+    // Only show button on container-type actors (vendors)
     const actor = app.actor;
-    const isVendorType = ["container", "npc", "character"].includes(actor?.type);
-    if (!isVendorType) return;
+    if (actor?.type !== 'container') return;
 
-    // Use the rendered sheet HTML to find the header reliably across systems
-    const header = html.closest('.app').find('.window-header');
-    if (!header.length || header.find('.persona5-shop-button').length) return;
+    // Find the window header via the app element to avoid DOM traversal issues
+    const appEl = app.element || html.closest('.app');
+    const header = appEl?.find('.window-header');
+    if (!header?.length) {
+      console.warn('Persona5Shop: window header not found for actor', actor?.name);
+      return;
+    }
+    if (header.find('.persona5-shop-button').length) return;
 
     const shopButton = $(`<a class="persona5-shop-button" title="${game.i18n.localize('PERSONA5SHOP.OpenShop')}">
       <i class="fas fa-shopping-cart"></i> ${game.i18n.localize('PERSONA5SHOP.Shop')}
     </a>`);
     
     shopButton.click(() => {
-      const controlledToken = canvas?.tokens?.controlled?.[0];
-      const buyer = controlledToken?.actor || game.user.character;
+      console.log('Persona5Shop: Shop button clicked for vendor', actor?.name);
+      // Prefer reading the buyer directly from the rendered sheet DOM
+      const dropdown = appEl.find('select.trade-with-dropdown, select[name="trade-with-dropdown"]');
+      const buyerId = dropdown.val();
       
-      if (!buyer) {
-        ui.notifications.warn(game.i18n.localize("PERSONA5SHOP.SelectBuyer"));
-        return;
+      let buyer = null;
+      if (buyerId) {
+        buyer = game.actors.get(buyerId);
+        if (!buyer) {
+          ui.notifications.error(`Trade target "${buyerId}" not found`);
+          return;
+        }
+      } else {
+        // Fallback: try known system paths if DOM not found
+        const fallbackId = actor.system?.tradeWithDropdown || actor.system?.trade_with_dropdown || actor.system?.tradeWith || actor.system?.trade_with;
+        if (fallbackId) {
+          buyer = game.actors.get(fallbackId);
+        }
+        if (!buyer) {
+          ui.notifications.error('Please select a character in the vendor\'s "Trade with" dropdown.');
+          return;
+        }
       }
       
+      console.log('Opening shop - Vendor:', actor.name, 'Buyer:', buyer?.name);
       game.persona5shop.openShop(actor, buyer);
     });
     
@@ -304,15 +557,30 @@ Hooks.on("chatMessage", (chatLog, message, chatData) => {
     
     const vendorName = args.slice(1).join(" ");
     const vendor = game.actors.getName(vendorName);
-    const buyer = game.user.character || canvas.tokens.controlled[0]?.actor;
     
     if (!vendor) {
       ui.notifications.error(`Vendor "${vendorName}" not found`);
       return false;
     }
     
-    if (!buyer) {
-      ui.notifications.error("No character selected");
+    // Verify vendor is a container
+    if (vendor.type !== 'container') {
+      ui.notifications.error(`"${vendorName}" must be a container actor`);
+      return false;
+    }
+    
+    // Get buyer from vendor's "trade with" field
+    const buyerId = vendor.system?.tradeWith || vendor.system?.trade_with;
+    let buyer = null;
+    
+    if (buyerId) {
+      buyer = game.actors.get(buyerId);
+      if (!buyer) {
+        ui.notifications.error(`Trade target actor "${buyerId}" not found`);
+        return false;
+      }
+    } else {
+      ui.notifications.error(`Container must have a "trade with" character selected`);
       return false;
     }
     

@@ -3,56 +3,61 @@
   <div class="shop-left-panel">
     <div class="shop-vendor-header">
       <h2 class="vendor-name">{{ vendor }}</h2>
-      <div class="shop-date">April 11th</div>
+      <div class="shop-date" id="currentDate">Loading date...</div>
     </div>
 
-    <div class="shop-items-list">
-      {{#if inventory.length}}
-        {{#each inventory}}
-          <div class="shop-item-row {{#if (eq @index ../selectedIndex)}}selected{{/if}}" data-item-id="{{this.id}}">
-            <div class="item-icon-box">
-              <img src="{{this.img}}" alt="{{this.name}}" class="item-icon" />
-            </div>
-            <div class="item-name-jp">{{this.name}}</div>
-            <div class="item-price-tag">€{{this.price}}</div>
-          </div>
-        {{/each}}
-      {{else}}
-        <div class="shop-empty">No items available</div>
-      {{/if}}
+    <div class="shop-items-list-wrapper">
+      <div class="p5-list-card">
+        <div class="p5-list-card-inner">
+          {{#if inventory.length}}
+            {{#each inventory}}
+              <div class="shop-item-row {{#if (eq @index ../selectedIndex)}}selected{{/if}}" data-item-id="{{this.id}}">
+                <div class="item-icon-box">
+                  <img src="{{this.img}}" alt="{{this.name}}" class="item-icon" />
+                </div>
+                <div class="item-name-jp">{{this.name}}</div>
+                <div class="item-price-tag">€{{this.price}}</div>
+              </div>
+            {{/each}}
+          {{else}}
+            <div class="shop-empty">No items available</div>
+          {{/if}}
+        </div>
+      </div>
     </div>
 
     <div class="shop-inventory-footer">
       <div class="inventory-count">
-        <span class="count-label">Cart</span>
-        <span class="count-value">{{cart.length}}<span class="count-unit"> items</span></span>
+        <span class="count-label">Have</span>
+        <span class="count-value">{{cart.length}}</span>
       </div>
       <div class="cart-total-display">
         <span class="total-value">€{{cartTotal}}</span>
-        <div class="purchase-hint">What will it be...?</div>
+        <div class="purchase-hint">What are you buying...?</div>
       </div>
     </div>
   </div>
 
   <!-- Right side - Character silhouette (blue background) -->
   <div class="shop-right-panel">
+    <div class="p5-bg-circles" aria-hidden="true"></div>
+    <div class="p5-ribbon ribbon-top" aria-hidden="true"></div>
+    <div class="p5-ribbon ribbon-bottom" aria-hidden="true"></div>
+    <div class="p5-diag diag-1" aria-hidden="true"></div>
+    <div class="p5-diag diag-2" aria-hidden="true"></div>
     <div class="character-silhouette-container">
       <img src="{{vendorImg}}" alt="{{vendor}}" class="character-silhouette" />
     </div>
     
     <div class="buyer-info-corner">
-      <span class="buyer-name-display">{{ buyer }}</span>
+      <span class="buyer-name-display">{{ vendor }}</span>
       <span class="buyer-money">€{{ currency }}</span>
     </div>
-  </div>
-
-  <!-- Action buttons (bottom) -->
-  <div class="shop-actions-bar">
-    <div class="action-hint">Use ↑↓ to navigate, Enter to add to cart, Esc to exit</div>
-    <div class="action-buttons">
-      <button class="p5-button btn-add" data-action="add">Add to Cart</button>
-      <button class="p5-button btn-buy {{#unless canAfford}}disabled{{/unless}}" data-action="purchase">Purchase</button>
-      <button class="p5-button btn-exit" data-action="exit">Exit</button>
+    
+    <!-- Action buttons (floating at bottom right) -->
+    <div class="shop-action-buttons">
+      <button class="p5-button btn-exit" data-action="exit">BACK</button>
+      <button class="p5-button btn-buy {{#unless canAfford}}disabled{{/unless}}" data-action="purchase">CONFIRM</button>
     </div>
   </div>
 </div>

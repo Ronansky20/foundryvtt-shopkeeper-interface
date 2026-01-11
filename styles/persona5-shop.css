@@ -1,6 +1,33 @@
 /* Show Foundry window (fallback rendering) */
 #persona5-shop {
   display: block !important;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  top: 0 !important;
+  left: 0 !important;
+}
+
+.app.window-app#persona5-shop {
+  border: none !important;
+  background: transparent !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  top: 0 !important;
+  left: 0 !important;
+}
+
+.persona5-shop {
+  border: none !important;
+  background: transparent !important;
+}
+
+/* Hide window header and footer */
+#persona5-shop .window-header,
+#persona5-shop .window-app-header {
+  display: none !important;
 }
 
 /* Hide custom wrapper when not used */
@@ -21,7 +48,7 @@ body {
   height: 100vh;
   display: grid;
   grid-template-columns: 50% 50%;
-  grid-template-rows: 1fr auto;
+  grid-template-rows: 1fr;
   background: transparent;
   z-index: 10000;
   margin: 0;
@@ -40,6 +67,7 @@ body {
   box-shadow: 5px 0 30px rgba(0, 0, 0, 0.5);
   padding: 40px;
   padding-left: 60px;
+  padding-bottom: 0;
   margin: 0;
   box-sizing: border-box;
 }
@@ -48,9 +76,8 @@ body {
   display: flex;
   align-items: center;
   gap: 15px;
-  margin-bottom: 30px;
-  padding-bottom: 20px;
-  border-bottom: 3px solid #000;
+  margin-bottom: 18px;
+  padding-bottom: 0;
 }
 
 .vendor-name {
@@ -64,18 +91,62 @@ body {
 
 .shop-date {
   margin-left: auto;
-  background: #0066cc;
-  color: #fff;
-  padding: 8px 20px;
-  font-weight: 700;
-  border-radius: 4px;
-  font-size: 14px;
+  background: #fff;
+  color: #000;
+  padding: 6px 14px;
+  font-weight: 900;
+  border: 3px solid #000;
+  border-radius: 6px;
+  font-size: 13px;
+  box-shadow: 4px 4px 0 #0b5cff;
 }
 
 .shop-items-list {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   padding-right: 20px;
+  margin-right: -20px;
+  padding-bottom: 20px;
+}
+
+.shop-items-list-wrapper {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.p5-list-card {
+  background: #fff;
+  border: 4px solid #000;
+  border-right-width: 6px;
+  box-shadow: 0 12px 36px rgba(0,0,0,0.35);
+  padding: 16px 14px 12px 28px;
+  margin-right: 30px;
+  transform: rotate(-2deg);
+  transform-origin: top left;
+  position: relative;
+  overflow: hidden; /* outer card hides rotated edges */
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* Non-transformed inner scroller to prevent scroll glitches */
+.p5-list-card-inner {
+  transform: rotate(2deg);
+  transform-origin: top left;
+  position: absolute;
+  inset: 16px 14px 12px 28px; /* match outer padding */
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  /* compensate slight rotation for padding alignment */
+  padding-right: 6px;
 }
 
 .shop-item-row {
@@ -83,35 +154,37 @@ body {
   grid-template-columns: 70px 1fr auto;
   gap: 20px;
   align-items: center;
-  padding: 18px 25px;
-  margin-bottom: 10px;
-  background: #f5f5f5;
-  border-left: 5px solid transparent;
+  padding: 14px 20px;
+  margin: 0;
+  background: #fff;
+  border-bottom: 3px solid #0b5cff;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: background 0.15s ease, color 0.15s ease;
+  flex-shrink: 0;
 }
 
 .shop-item-row:hover {
-  background: #e8e8e8;
-  border-left-color: #0066cc;
+  background: #f0f4ff;
 }
 
 .shop-item-row.selected {
-  background: #0066cc;
-  border-left-color: #003d99;
+  background: #0b5cff;
   color: #fff;
+  box-shadow: inset 0 0 0 3px #0066cc;
 }
 
 .item-icon-box {
   width: 70px;
   height: 70px;
   background: #fff;
-  border: 2px solid #ddd;
+  border: 3px solid #0b5cff;
   border-radius: 4px;
   padding: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+  z-index: 1;
 }
 
 .item-icon {
@@ -140,8 +213,14 @@ body {
   padding: 25px 40px;
   background: #000;
   color: #fff;
-  margin: 0 -40px -40px -60px;
+  /* Keep footer within the left column: no negative right margin */
+  margin: 0 0 0 -60px;
   padding-left: 60px;
+  flex-shrink: 0;
+  margin-top: auto;
+  width: calc(100% + 60px);
+  position: relative;
+  z-index: 3;
 }
 
 .count-label {
@@ -177,11 +256,12 @@ body {
 .shop-right-panel {
   grid-column: 2;
   grid-row: 1;
-  background: linear-gradient(135deg, #0044dd 0%, #0066ff 50%, #0088ff 100%);
+  background: linear-gradient(135deg, #003cc7 0%, #0055ee 40%, #0077ff 100%);
   position: relative;
   overflow: hidden;
+  z-index: 6; /* above left footer and other neighbors */
   margin: 0;
-  padding: 0;
+  padding: 0 0 120px 0; /* ensure room for floating buttons */
   box-sizing: border-box;
 }
 
@@ -215,6 +295,46 @@ body {
   50% { transform: translate(40px, 40px) rotate(30deg) skewX(-12deg); }
 }
 
+/* Persona 5 circle motif background */
+.p5-bg-circles {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 10% 20%, rgba(255,255,255,0.22) 0 20px, transparent 22px),
+    radial-gradient(circle at 40% 60%, rgba(255,255,255,0.18) 0 26px, transparent 28px),
+    radial-gradient(circle at 80% 30%, rgba(255,255,255,0.16) 0 18px, transparent 20px),
+    radial-gradient(circle at 70% 80%, rgba(255,255,255,0.14) 0 22px, transparent 24px),
+    radial-gradient(circle at 25% 75%, rgba(255,255,255,0.12) 0 30px, transparent 32px),
+    radial-gradient(circle at 90% 70%, rgba(255,255,255,0.1) 0 28px, transparent 30px);
+  mix-blend-mode: overlay;
+  opacity: 0.7;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Persona 5 bold diagonal ribbons */
+.p5-ribbon {
+  position: absolute;
+  left: -15%;
+  width: 130%;
+  height: 120px;
+  background: #0b5cff;
+  box-shadow: 0 0 0 8px rgba(255,255,255,1), 0 10px 30px rgba(0,0,0,0.35);
+  transform-origin: center;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.p5-ribbon.ribbon-top {
+  top: 32%;
+  transform: rotate(-18deg);
+}
+
+.p5-ribbon.ribbon-bottom {
+  top: 60%;
+  transform: rotate(14deg);
+}
+
 .character-silhouette-container {
   position: absolute;
   top: 50%;
@@ -222,10 +342,11 @@ body {
   transform: translate(-50%, -50%);
   width: 500px;
   height: 500px;
-  z-index: 1;
+  z-index: 5;
   display: flex;
   align-items: center;
   justify-content: center;
+  pointer-events: none;
 }
 
 .character-silhouette {
@@ -233,9 +354,47 @@ body {
   height: 100%;
   object-fit: contain;
   /* Better for pixel art - shows colors with brightness boost */
-  filter: brightness(1.3) contrast(1.1);
-  opacity: 0.5;
-  mix-blend-mode: screen;
+  image-rendering: pixelated;
+  filter: brightness(1.2) contrast(1.3);
+  opacity: 0.95;
+  mix-blend-mode: normal;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+}
+
+/* Ensure no default borders or shadows around the actor image */
+.shop-right-panel img,
+.character-silhouette,
+.character-silhouette-container {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+/* Translucent diagonal panels */
+.p5-diag {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+.p5-diag.diag-1 {
+  width: 150%;
+  height: 60%;
+  left: -25%;
+  top: -10%;
+  background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.08));
+  transform: rotate(35deg) skewX(-8deg);
+  mix-blend-mode: overlay;
+}
+.p5-diag.diag-2 {
+  width: 140%;
+  height: 50%;
+  left: -20%;
+  bottom: -15%;
+  background: linear-gradient(135deg, rgba(255,255,255,0.12), rgba(255,255,255,0.06));
+  transform: rotate(-25deg) skewX(6deg);
+  mix-blend-mode: overlay;
 }
 
 .buyer-info-corner {
@@ -243,15 +402,16 @@ body {
   top: 40px;
   right: 50px;
   text-align: right;
-  z-index: 2;
-  background: rgba(0, 0, 0, 0.3);
+  z-index: 4;
+  background: rgba(0, 0, 0, 0.4);
   padding: 15px 25px;
   border-radius: 8px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
 }
 
 .buyer-name-display {
   display: block;
-  font-size: 22px;
+  font-size: 18px;
   font-weight: 900;
   color: #fff;
   text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.7);
@@ -261,82 +421,85 @@ body {
 
 .buyer-money {
   display: block;
-  font-size: 40px;
+  font-size: 36px;
   font-weight: 900;
   color: #fff;
   text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.7);
 }
 
-/* ACTION BAR */
-.shop-actions-bar {
-  grid-column: 1 / -1;
-  grid-row: 2;
-  background: #000;
-  padding: 25px 50px;
+/* Floating action buttons in right panel */
+.shop-action-buttons {
+  position: fixed;
+  bottom: 30px;
+  right: 40px;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 30px;
-  margin: 0;
-  box-sizing: border-box;
+  gap: 15px;
+  z-index: 10;
+  pointer-events: auto;
 }
 
-.action-buttons {
-  display: flex;
-  gap: 20px;
-}
+/* (deduped) */
 
-.p5-button {
-  padding: 15px 40px;
-  font-size: 14px;
-  font-weight: 900;
+.shop-action-buttons .p5-button {
+  padding: 10px 32px;
+  font-size: 13px;
+  font-weight: 700;
   text-transform: uppercase;
   border: 3px solid #000;
   cursor: pointer;
-  background: #fff;
+  background: #d9d9d9;
   color: #000;
-  border-radius: 0;
-  transition: all 0.2s ease;
+  border-radius: 50px;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  letter-spacing: 1px;
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.3);
+  white-space: nowrap;
 }
 
-.p5-button:hover {
+.shop-action-buttons .p5-button:hover:not(.disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.4);
 }
 
-.p5-button:active {
+.shop-action-buttons .p5-button:active:not(.disabled) {
   transform: translateY(0);
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.2);
 }
 
-.btn-add {
-  background: #fff;
+.shop-action-buttons .btn-exit {
+  background: #d9d9d9;
   color: #000;
   border-color: #000;
 }
 
-.btn-buy {
+.shop-action-buttons .btn-buy {
   background: #e60012;
   color: #fff;
-  border-color: #ff0000;
+  border-color: #b30000;
+  box-shadow: 3px 3px 0 rgba(230, 0, 18, 0.4);
 }
 
-.btn-buy.disabled {
-  opacity: 0.4;
+.shop-action-buttons .btn-buy:hover:not(.disabled) {
+  box-shadow: 4px 4px 0 rgba(230, 0, 18, 0.5);
+}
+
+.shop-action-buttons .btn-buy:active:not(.disabled) {
+  box-shadow: 2px 2px 0 rgba(230, 0, 18, 0.3);
+}
+
+.shop-action-buttons .btn-buy.disabled {
+  opacity: 0.5;
   cursor: not-allowed;
   pointer-events: none;
 }
 
-.btn-exit {
-  background: #222;
-  color: #fff;
-  border-color: #666;
+/* Hide old action bar */
+.shop-actions-bar {
+  display: none;
 }
 
 .action-hint {
-  color: #888;
-  font-size: 13px;
-  font-style: italic;
-  flex: 1;
+  display: none;
 }
 
 .shop-items-list::-webkit-scrollbar {
